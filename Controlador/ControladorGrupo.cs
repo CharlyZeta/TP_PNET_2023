@@ -5,13 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using TP_Contursi_Garau_Vegetti_Mangoldt_Maidana.Vista;
 using TP_Contursi_Garau_Vegetti_Mangoldt_Maidana.Controlador;
+using TP_Contursi_Garau_Vegetti_Mangoldt_Maidana;
 
-
-namespace TP_Contursi_Garau_Vegetti_Mangoldt_Maidana.Controlador
+namespace TP_PNET.Controlador
 {
-    internal class ControladorGrupo
+    class ControladorGrupo
     {
-        static void ListarGrupos(List<ModeloGrupo> listaGrupos)
+        public bool ListarGrupos(List<ModeloGrupo> listaGrupos)
         {
             Console.WriteLine("=== Lista de Grupos ===");
 
@@ -19,14 +19,35 @@ namespace TP_Contursi_Garau_Vegetti_Mangoldt_Maidana.Controlador
             {
                 Console.WriteLine(grupo.ToString());
             }
+            Console.ReadKey();
+            return true;
         }
 
-        static void AltaGrupo(List<ModeloGrupo> listaGrupos, List<ModeloPermiso> listaPermisos)
+        public bool AltaGrupo(List<ModeloGrupo> listaGrupos, List<ModeloPermiso> listaPermisos)
         {
+            int codigo = 0;
             Console.WriteLine("=== Alta de Grupo ===");
 
-            Console.Write("Ingrese el código del grupo: ");
-            int codigo = Convert.ToInt32(Console.ReadLine());
+            //Console.Write("Ingrese el código del grupo: ");            
+            //int codigo = Convert.ToInt32(Console.ReadLine());
+
+            try
+            {
+                // si la lista está vacía le asigna al primer código el 1, si ya tiene valores incrementa el valor máximo.
+                _ = listaGrupos.Any() ? codigo = listaGrupos.Max(p => p.Codigo) + 1 : codigo = 1;
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Código {0} agregado exitosamente.", codigo);
+                Console.ResetColor();
+                Console.WriteLine();
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Ocurrió un error al agregar el código del grupo: " + ex.Message);
+                Console.ResetColor();
+            }
+
 
             Console.Write("Ingrese el nombre del grupo: ");
             string nombre = Console.ReadLine();
@@ -34,12 +55,18 @@ namespace TP_Contursi_Garau_Vegetti_Mangoldt_Maidana.Controlador
             // Obtener la lista de permisos para el grupo
             List<ModeloPermiso> listaPermisosGrupo = new List<ModeloPermiso>();
 
-            bool agregarMasPermisos = true;
+            bool agregarMasPermisos = true, ok;
+            int codigoPermiso = 0;
 
             while (agregarMasPermisos)
             {
-                Console.Write("Ingrese el código del permiso a agregar al grupo (0 para finalizar): ");
-                int codigoPermiso = Convert.ToInt32(Console.ReadLine());
+                do
+                {
+                    Console.Write("Ingrese el código del permiso a agregar al grupo (0 para finalizar): ");
+                    ok = int.TryParse(Console.ReadLine(), out codigoPermiso);
+                    
+                } while (!ok);
+                
 
                 if (codigoPermiso == 0)
                 {
@@ -55,18 +82,24 @@ namespace TP_Contursi_Garau_Vegetti_Mangoldt_Maidana.Controlador
                     }
                     else
                     {
+                        Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine("No se encontró un permiso con el código ingresado.");
+                        Console.ResetColor();
                     }
                 }
             }
 
             ModeloGrupo grupo = new ModeloGrupo(codigo, nombre, listaPermisosGrupo);
             listaGrupos.Add(grupo);
-
+            
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Grupo agregado exitosamente.");
+            Console.ResetColor();
+
+            return true;
         }
 
-        static void ModificarGrupo(List<ModeloGrupo> listaGrupos, List<ModeloPermiso> listaPermisos)
+        public bool ModificarGrupo(List<ModeloGrupo> listaGrupos, List<ModeloPermiso> listaPermisos)
         {
             Console.WriteLine("=== Modificar Grupo ===");
 
@@ -119,9 +152,11 @@ namespace TP_Contursi_Garau_Vegetti_Mangoldt_Maidana.Controlador
             {
                 Console.WriteLine("No se encontró un grupo con el código ingresado.");
             }
+
+            return true;
         }
 
-        static void EliminarGrupo(List<ModeloGrupo> listaGrupos, List<ModeloUsuario> listaUsuarios)
+        public bool EliminarGrupo(List<ModeloGrupo> listaGrupos, List<ModeloUsuario> listaUsuarios)
         {
             Console.WriteLine("=== Eliminar Grupo ===");
 
@@ -158,6 +193,8 @@ namespace TP_Contursi_Garau_Vegetti_Mangoldt_Maidana.Controlador
             {
                 Console.WriteLine("No se encontró un grupo con el código ingresado.");
             }
+
+            return true;
         }
     }
 }

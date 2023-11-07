@@ -23,31 +23,42 @@ namespace TP_PNET
             {
                 Console.Clear();
                 Console.WriteLine("=== Menú Principal ===");
-                Console.WriteLine("1. Permiso");
-                Console.WriteLine("2. Grupo");
-                Console.WriteLine("3. Usuario");
-                Console.WriteLine("4. Salir");
+                Console.WriteLine("P. Permiso");
+                Console.WriteLine("G. Grupo");
+                Console.WriteLine("U. Usuario");
+                Console.WriteLine("S. Salir");
+                Console.WriteLine();
 
                 ConsoleKeyInfo tecla = Console.ReadKey();
 
                 switch (tecla.KeyChar)
                 {
-                    case '1':
+                    case 'p':
                         MenuPermiso(listaPermisos);
                         break;
-                    case '2':
+                    case 'P':
+                        MenuPermiso(listaPermisos);
+                        break;
+                    case 'g':
                         MenuGrupo();
                         break;
-                    case '3':
+                    case 'G':
+                        MenuGrupo();
+                        break;
+                    case 'u':
                         MenuUsuario();
                         break;
-                    case '4':
+                    case 'U':
+                        MenuUsuario();
+                        break;
+                    case 's':
+                        salir = true;
+                        break;
+                    case 'S':
                         salir = true;
                         break;
                     default:
-
                         MensajeOpcionInvalida();
-                       
                         break;
                 }
             }
@@ -65,17 +76,17 @@ namespace TP_PNET
             bool volver = false;
 
             ControladorPermiso Permiso = new ControladorPermiso();
-            
 
             while (!volver)
             {
                 Console.Clear();
                 Console.WriteLine("=== Menú Permiso ===");
-                Console.WriteLine("1. Listar Permisos");
-                Console.WriteLine("2. Alta de Permiso");
-                Console.WriteLine("3. Modificar Permiso");
-                Console.WriteLine("4. Eliminar Permiso");
-                Console.WriteLine("5. Volver");
+                Console.WriteLine("L. Listar Permisos");
+                Console.WriteLine("A. Alta de Permiso");
+                Console.WriteLine("M. Modificar Permiso");
+                Console.WriteLine("E. Eliminar Permiso");
+                Console.WriteLine("V. Volver");
+                Console.WriteLine();
 
                 //int opcionPermiso = Convert.ToInt32(Console.ReadLine());
 
@@ -83,19 +94,34 @@ namespace TP_PNET
                 switch (tecla.KeyChar)
                 //switch (opcionPermiso)
                 {
-                    case '1':
+                    case 'l':
                         Permiso.ListarPermisos(listaPermisos);
                         break;
-                    case '2':
+                    case 'L':
+                        Permiso.ListarPermisos(listaPermisos);
+                        break;
+                    case 'a':
                         Permiso.AltaPermiso(listaPermisos);
                         break;
-                    case '3':
+                    case 'A':
+                        Permiso.AltaPermiso(listaPermisos);
+                        break;
+                    case 'm':
                         Permiso.ModificarPermiso(listaPermisos);
                         break;
-                    case '4':
+                    case 'M':
+                        Permiso.ModificarPermiso(listaPermisos);
+                        break;
+                    case 'e':
                         Permiso.EliminarPermiso(listaPermisos, listaUsuarios, listaGrupos);
                         break;
-                    case '5':
+                    case 'E':
+                        Permiso.EliminarPermiso(listaPermisos, listaUsuarios, listaGrupos);
+                        break;
+                    case 'v':
+                        volver = true;
+                        break;
+                    case 'V':
                         volver = true;
                         break;
                     default:
@@ -108,39 +134,59 @@ namespace TP_PNET
         static void MenuGrupo()
         {
             bool volver = false;
+            ControladorGrupo grupo = new ControladorGrupo();
 
             while (!volver)
             {
+                Console.Clear();
                 Console.WriteLine("=== Menú Grupo ===");
-                Console.WriteLine("1. Listar Grupos");
-                Console.WriteLine("2. Alta de Grupo");
-                Console.WriteLine("3. Modificar Grupo");
-                Console.WriteLine("4. Eliminar Grupo");
-                Console.WriteLine("5. Volver");
+                Console.WriteLine("L. Listar Grupos");
+                Console.WriteLine("A. Alta de Grupo");
+                Console.WriteLine("M. Modificar Grupo");
+                Console.WriteLine("E. Eliminar Grupo");
+                Console.WriteLine("V. Volver");
+                Console.WriteLine();
 
-                int opcionGrupo = Convert.ToInt32(Console.ReadLine());
-
-                //switch (opcionGrupo)
-                //{
-                //    case 1:
-                //        ListarGrupos();
-                //        break;
-                //    case 2:
-                //        AltaGrupo();
-                //        break;
-                //    case 3:
-                //        ModificarGrupo();
-                //        break;
-                //    case 4:
-                //        EliminarGrupo();
-                //        break;
-                //    case 5:
-                //        volver = true;
-                //        break;
-                //    default:
-                //        MensajeOpcionInvalida();
-                //        break;
-                //}
+                //int opcionGrupo = Convert.ToInt32(Console.ReadLine());
+                
+                ConsoleKeyInfo tecla = Console.ReadKey();
+                
+                switch (tecla.KeyChar)
+                {
+                    case 'l':
+                        grupo.ListarGrupos(listaGrupos);
+                        break;
+                    case 'L':
+                        grupo.ListarGrupos(listaGrupos);
+                        break;
+                    case 'a':
+                        grupo.AltaGrupo(listaGrupos, listaPermisos);
+                        break;
+                    case 'A':
+                        grupo.AltaGrupo(listaGrupos, listaPermisos);
+                        break;
+                    case 'm':
+                        grupo.ModificarGrupo(listaGrupos, listaPermisos);
+                        break;
+                    case 'M':
+                        grupo.ModificarGrupo(listaGrupos, listaPermisos);
+                        break;
+                    case 'e':
+                        grupo.EliminarGrupo(listaGrupos, listaUsuarios);
+                        break;
+                    case 'E':
+                        grupo.EliminarGrupo(listaGrupos, listaUsuarios);
+                        break;
+                    case 'v':
+                        volver = true;
+                        break;
+                    case 'V':
+                        volver = true;
+                        break;
+                    default:
+                        MensajeOpcionInvalida();
+                        break;
+                }
             }
         }
 
@@ -150,16 +196,21 @@ namespace TP_PNET
 
             while (!volver)
             {
+                Console.Clear();
                 Console.WriteLine("=== Menú Usuario ===");
                 Console.WriteLine("1. Listar Usuarios");
                 Console.WriteLine("2. Alta de Usuario");
                 Console.WriteLine("3. Modificar Usuario");
                 Console.WriteLine("4. Eliminar Usuario");
                 Console.WriteLine("5. Volver");
+                Console.WriteLine();
 
-                int opcionUsuario = Convert.ToInt32(Console.ReadLine());
+                //int opcionUsuario = Convert.ToInt32(Console.ReadLine());
+
+                ConsoleKeyInfo tecla = Console.ReadKey();
 
                 //switch (opcionUsuario)
+                //switch (tecla.KeyChar)
                 //{
                 //    case 1:
                 //        ListarUsuarios();

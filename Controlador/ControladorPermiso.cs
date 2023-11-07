@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using TP_Contursi_Garau_Vegetti_Mangoldt_Maidana;
@@ -33,11 +34,10 @@ namespace TP_PNET.Controlador
             //int codigo = Convert.ToInt32(Console.ReadLine());
             try
             {
-                Console.ForegroundColor = ConsoleColor.Green;
-
                 // si la lista está vací le asigna al primer código el 1, si ya tiene valores incrementa el valor máximo.
                 _ = listaPermisos.Any() ? codigo = listaPermisos.Max(p => p.Codigo) + 1 : codigo = 1;
-                
+
+                Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Código {0} agregado exitosamente.", codigo);
                 Console.ResetColor();
                 Console.WriteLine();
@@ -61,14 +61,17 @@ namespace TP_PNET.Controlador
             {
                 listaPermisos.Add(permiso);
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Permiso agregado exitosamente.");
+                Console.WriteLine("Permiso agregado exitosamente! Presione una tecla para continuar.");
                 Console.ResetColor();
+                Console.ReadKey();
             }
             catch (Exception ex)
             {   
                 Console.ForegroundColor= ConsoleColor.Red;
                 Console.WriteLine("Ocurrió un error al agregar el permiso: " + ex.Message);
+                Console.WriteLine("Presione una tecla para continuar.");
                 Console.ResetColor();
+                Console.ReadKey();
             }
 
             return listaPermisos;
@@ -76,10 +79,23 @@ namespace TP_PNET.Controlador
 
         public List<ModeloPermiso> ModificarPermiso(List<ModeloPermiso> listaPermisos)
         {
+            bool ok;
+            int codigoModificar;
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("=== Modificar Permiso ===");
+            Console.ResetColor();
 
-            Console.Write("Ingrese el código del permiso a modificar: ");
-            int codigoModificar = Convert.ToInt32(Console.ReadLine());
+            ListarPermisos(listaPermisos);
+            
+
+            do
+            {
+                Console.Write("Ingrese el código del permiso a modificar: ");
+                ok = int.TryParse(Console.ReadLine(), out codigoModificar);
+
+            } while (!ok);
+            
+
 
             // busca el código dentro de la lista
             ModeloPermiso permisoModificar = listaPermisos.Find(p => p.Codigo == codigoModificar);
@@ -136,37 +152,47 @@ namespace TP_PNET.Controlador
                 // Verificar si el permiso está siendo utilizado por algún usuario o grupo
                 bool permisoEnUso = false;
 
-                foreach (ModeloUsuario usuario in listaUsuarios)
-                {
-                    if (usuario.ListaPermisos.Contains(permisoEliminar))
-                    {
-                        permisoEnUso = true;
-                        break;
-                    }
-                }
+                permisoEnUso = listaUsuarios.Any(usuario => usuario.ListaPermisos.Contains(permisoEliminar));
 
-                foreach (ModeloGrupo grupo in listaGrupos)
-                {
-                    if (grupo.ListaPermisos.Contains(permisoEliminar))
-                    {
-                        permisoEnUso = true;
-                        break;
-                    }
-                }
+                //foreach (ModeloUsuario usuario in listaUsuarios)
+                //{
+                //    if (usuario.ListaPermisos.Contains(permisoEliminar))
+                //    {
+                //        permisoEnUso = true;
+                //        break;
+                //    }
+                //}
+
+                permisoEnUso = listaGrupos.Any(grupo => grupo.ListaPermisos.Contains(permisoEliminar));
+
+                //foreach (ModeloGrupo grupo in listaGrupos)
+                //{
+                //    if (grupo.ListaPermisos.Contains(permisoEliminar))
+                //    {
+                //        permisoEnUso = true;
+                //        break;
+                //    }
+                //}
 
                 if (!permisoEnUso)
                 {
                     listaPermisos.Remove(permisoEliminar);
+                    Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("Permiso eliminado exitosamente.");
+                    Console.ResetColor();
                 }
                 else
                 {
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("No se puede eliminar el permiso porque está siendo utilizado por un usuario o grupo.");
+                    Console.ResetColor();
                 }
             }
             else
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("No se encontró un permiso con el código ingresado.");
+                Console.ResetColor();
             }
             Console.ReadKey();
             return listaPermisos;

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TP_Contursi_Garau_Vegetti_Mangoldt_Maidana.Vista;
 using TP_Contursi_Garau_Vegetti_Mangoldt_Maidana.Controlador;
 using TP_Contursi_Garau_Vegetti_Mangoldt_Maidana;
+using System.Diagnostics.Eventing.Reader;
 
 namespace TP_PNET.Controlador
 {
@@ -40,12 +41,15 @@ namespace TP_PNET.Controlador
                 Console.WriteLine("Código {0} agregado exitosamente.", codigo);
                 Console.ResetColor();
                 Console.WriteLine();
+                Console.ReadKey();
             }
             catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Ocurrió un error al agregar el código del grupo: " + ex.Message);
                 Console.ResetColor();
+                Console.WriteLine();
+                Console.ReadKey();
             }
 
 
@@ -82,9 +86,11 @@ namespace TP_PNET.Controlador
                     }
                     else
                     {
-                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("No se encontró un permiso con el código ingresado.");
                         Console.ResetColor();
+                        Console.WriteLine();
+                        Console.ReadKey();
                     }
                 }
             }
@@ -95,12 +101,17 @@ namespace TP_PNET.Controlador
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Grupo agregado exitosamente.");
             Console.ResetColor();
+            Console.WriteLine();
+            Console.ReadKey();
 
             return true;
         }
 
         public bool ModificarGrupo(List<ModeloGrupo> listaGrupos, List<ModeloPermiso> listaPermisos)
         {
+            bool ok;
+            int codigoPermisoModificado;
+
             Console.WriteLine("=== Modificar Grupo ===");
 
             Console.Write("Ingrese el código del grupo a modificar: ");
@@ -122,8 +133,12 @@ namespace TP_PNET.Controlador
 
                 while (agregarMasPermisosModificado)
                 {
-                    Console.Write("Ingrese el código del permiso a agregar al grupo (0 para finalizar): ");
-                    int codigoPermisoModificado = Convert.ToInt32(Console.ReadLine());
+                    do
+                    {
+                        Console.Write("Ingrese el código del permiso a agregar al grupo (0 para finalizar): ");
+                        ok = int.TryParse(Console.ReadLine(), out codigoPermisoModificado);
+                    } while (!ok);
+                    
 
                     if (codigoPermisoModificado == 0)
                     {
@@ -139,18 +154,25 @@ namespace TP_PNET.Controlador
                         }
                         else
                         {
+                            Console.ForegroundColor= ConsoleColor.Red;
                             Console.WriteLine("No se encontró un permiso con el código ingresado.");
+                            Console.ResetColor();
                         }
                     }
                 }
 
                 grupoModificar.ListaPermisos = listaPermisosGrupoModificado;
-
+                Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Grupo modificado exitosamente.");
+                Console.ResetColor();
+                Console.ReadKey();
             }
             else
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("No se encontró un grupo con el código ingresado.");
+                Console.ResetColor();
+                Console.ReadKey();
             }
 
             return true;
@@ -160,8 +182,19 @@ namespace TP_PNET.Controlador
         {
             Console.WriteLine("=== Eliminar Grupo ===");
 
+            ListarGrupos(listaGrupos);
+
             Console.Write("Ingrese el código del grupo a eliminar: ");
-            int codigoEliminar = Convert.ToInt32(Console.ReadLine());
+            
+            int codigoEliminar;
+            bool ok;
+
+            do
+            {
+                Console.WriteLine();
+                Console.Write("Ingrese el código del grupo a eliminar: ");
+                ok = int.TryParse(Console.ReadLine(), out codigoEliminar);
+            } while (!ok);
 
             ModeloGrupo grupoEliminar = listaGrupos.Find(g => g.Codigo == codigoEliminar);
 
@@ -170,28 +203,36 @@ namespace TP_PNET.Controlador
                 // Verificar si el grupo está siendo utilizado por algún usuario
                 bool grupoEnUso = false;
 
-                foreach (ModeloUsuario usuario in listaUsuarios)
-                {
-                    if (usuario.Grupo == grupoEliminar)
-                    {
-                        grupoEnUso = true;
-                        break;
-                    }
-                }
+                grupoEnUso = listaUsuarios.Any(u => u.Grupo == grupoEliminar);
+
+                //foreach (ModeloUsuario usuario in listaUsuarios)
+                //{
+                //    if (usuario.Grupo == grupoEliminar)
+                //    {
+                //        grupoEnUso = true;
+                //        break;
+                //    }
+                //}
 
                 if (!grupoEnUso)
                 {
                     listaGrupos.Remove(grupoEliminar);
+                    Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("Grupo eliminado exitosamente.");
+                    Console.ResetColor();
                 }
                 else
                 {
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("No se puede eliminar el grupo porque está siendo utilizado por un usuario.");
+                    Console.ResetColor();
                 }
             }
             else
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("No se encontró un grupo con el código ingresado.");
+                Console.ResetColor();
             }
 
             return true;

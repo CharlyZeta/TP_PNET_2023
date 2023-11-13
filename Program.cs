@@ -4,235 +4,192 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TP_PNET;
+using TP_PNET.Vista;
 using TP_PNET.Controlador;
-using TP_Contursi_Garau_Vegetti_Mangoldt_Maidana;
+using System.Collections;
 
 namespace TP_PNET
 {
     class Program
     {
-        static List<ModeloPermiso> listaPermisos = new List<ModeloPermiso>();
-        static List<ModeloGrupo> listaGrupos = new List<ModeloGrupo>();
-        static List<ModeloUsuario> listaUsuarios = new List<ModeloUsuario>();
+        //static List<ModeloPermiso> listaPermisos = new List<ModeloPermiso>();
+        //static List<ModeloGrupo> listaGrupos = new List<ModeloGrupo>();
+        //static List<ModeloUsuario> listaUsuarios = new List<ModeloUsuario>();
+                
+        static MensajesDeSisema msj = new MensajesDeSisema();
 
-        static void Main(string[] args)
+        
+        static void Main()
         {
+
+            List<ModeloPermiso> listaPermisos = new List<ModeloPermiso>();
+            List<ModeloGrupo> listaGrupos = new List<ModeloGrupo>();
+            List<ModeloUsuario> listaUsuarios = new List<ModeloUsuario>();
+
             bool salir = false;
+
+            ModeloPermiso permiso1 = new ModeloPermiso(1, "Permiso 1", "Permiso de acceso al sistema");
+            ModeloPermiso permiso2 = new ModeloPermiso(2, "Permiso 2", "Permiso de carga de datos");
+            ModeloPermiso permiso3 = new ModeloPermiso(3, "Permiso 2", "Permiso de edición de datos");
+            listaPermisos.Add(permiso1);
+            listaPermisos.Add(permiso2);
+            listaPermisos.Add(permiso3);
+
+            ModeloGrupo grupo1 = new ModeloGrupo(1, "Grupo 1", new List<ModeloPermiso> { permiso1 });
+            ModeloGrupo grupo2 = new ModeloGrupo(2, "Grupo 2", new List<ModeloPermiso> { permiso1, permiso2 });
+            listaGrupos.Add(grupo1);
+            listaGrupos.Add(grupo2);
+
+            ModeloUsuario usuario1 = new ModeloUsuario(1, "Gerardo", "pass123456", "gmmaidana@frsf.utn.edu.ar", grupo1, listaPermisos);
+            ModeloUsuario usuario2 = new ModeloUsuario(2, "Marcelo", "pass234567", "mperez@frsf.utn.edu.ar", grupo2, listaPermisos);
+            listaUsuarios.Add(usuario1);
+            listaUsuarios.Add(usuario2);
 
             while (!salir)
             {
-                Console.Clear();
-                Console.WriteLine("=== Menú Principal ===");
-                Console.WriteLine("P. Permiso");
-                Console.WriteLine("G. Grupo");
-                Console.WriteLine("U. Usuario");
-                Console.WriteLine("S. Salir");
-                Console.WriteLine();
+                           
+                VistaPrincipal principal = new VistaPrincipal();
+                salir = principal.menuPrincipal(listaPermisos,listaGrupos,listaUsuarios, salir);
 
-                ConsoleKeyInfo tecla = Console.ReadKey();
-
-                switch (tecla.KeyChar)
-                {
-                    case 'p':
-                        MenuPermiso(listaPermisos);
-                        break;
-                    case 'P':
-                        MenuPermiso(listaPermisos);
-                        break;
-                    case 'g':
-                        MenuGrupo();
-                        break;
-                    case 'G':
-                        MenuGrupo();
-                        break;
-                    case 'u':
-                        MenuUsuario();
-                        break;
-                    case 'U':
-                        MenuUsuario();
-                        break;
-                    case 's':
-                        salir = true;
-                        break;
-                    case 'S':
-                        salir = true;
-                        break;
-                    default:
-                        MensajeOpcionInvalida();
-                        break;
-                }
-            }
-        }
-
-        private static void MensajeOpcionInvalida()
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Opción inválida. Por favor, seleccione una opción válida.");
-            Console.ResetColor();
-        }
-
-        static void MenuPermiso(List<ModeloPermiso>listaPermisos)
-        {
-            bool volver = false;
-
-            ControladorPermiso Permiso = new ControladorPermiso();
-
-            while (!volver)
-            {
-                Console.Clear();
-                Console.WriteLine("=== Menú Permiso ===");
-                Console.WriteLine("L. Listar Permisos");
-                Console.WriteLine("A. Alta de Permiso");
-                Console.WriteLine("M. Modificar Permiso");
-                Console.WriteLine("E. Eliminar Permiso");
-                Console.WriteLine("V. Volver");
-                Console.WriteLine();
-
-                //int opcionPermiso = Convert.ToInt32(Console.ReadLine());
-
-                ConsoleKeyInfo tecla = Console.ReadKey();
-                switch (tecla.KeyChar)
-                //switch (opcionPermiso)
-                {
-                    case 'l':
-                        Permiso.ListarPermisos(listaPermisos);
-                        break;
-                    case 'L':
-                        Permiso.ListarPermisos(listaPermisos);
-                        break;
-                    case 'a':
-                        Permiso.AltaPermiso(listaPermisos);
-                        break;
-                    case 'A':
-                        Permiso.AltaPermiso(listaPermisos);
-                        break;
-                    case 'm':
-                        Permiso.ModificarPermiso(listaPermisos);
-                        break;
-                    case 'M':
-                        Permiso.ModificarPermiso(listaPermisos);
-                        break;
-                    case 'e':
-                        Permiso.EliminarPermiso(listaPermisos, listaUsuarios, listaGrupos);
-                        break;
-                    case 'E':
-                        Permiso.EliminarPermiso(listaPermisos, listaUsuarios, listaGrupos);
-                        break;
-                    case 'v':
-                        volver = true;
-                        break;
-                    case 'V':
-                        volver = true;
-                        break;
-                    default:
-                        MensajeOpcionInvalida();
-                        break;
-                }
-            }
-        }
-
-        static void MenuGrupo()
-        {
-            bool volver = false;
-            ControladorGrupo grupo = new ControladorGrupo();
-
-            while (!volver)
-            {
-                Console.Clear();
-                Console.WriteLine("=== Menú Grupo ===");
-                Console.WriteLine("L. Listar Grupos");
-                Console.WriteLine("A. Alta de Grupo");
-                Console.WriteLine("M. Modificar Grupo");
-                Console.WriteLine("E. Eliminar Grupo");
-                Console.WriteLine("V. Volver");
-                Console.WriteLine();
-
-                //int opcionGrupo = Convert.ToInt32(Console.ReadLine());
                 
-                ConsoleKeyInfo tecla = Console.ReadKey();
-                
-                switch (tecla.KeyChar)
-                {
-                    case 'l':
-                        grupo.ListarGrupos(listaGrupos);
-                        break;
-                    case 'L':
-                        grupo.ListarGrupos(listaGrupos);
-                        break;
-                    case 'a':
-                        grupo.AltaGrupo(listaGrupos, listaPermisos);
-                        break;
-                    case 'A':
-                        grupo.AltaGrupo(listaGrupos, listaPermisos);
-                        break;
-                    case 'm':
-                        grupo.ModificarGrupo(listaGrupos, listaPermisos);
-                        break;
-                    case 'M':
-                        grupo.ModificarGrupo(listaGrupos, listaPermisos);
-                        break;
-                    case 'e':
-                        grupo.EliminarGrupo(listaGrupos, listaUsuarios);
-                        break;
-                    case 'E':
-                        grupo.EliminarGrupo(listaGrupos, listaUsuarios);
-                        break;
-                    case 'v':
-                        volver = true;
-                        break;
-                    case 'V':
-                        volver = true;
-                        break;
-                    default:
-                        MensajeOpcionInvalida();
-                        break;
-                }
             }
         }
 
-        static void MenuUsuario()
-        {
-            bool volver = false;
+        
+        //static void MenuPermiso()
+        //{
+        //    bool volver = false;
 
-            while (!volver)
-            {
-                Console.Clear();
-                Console.WriteLine("=== Menú Usuario ===");
-                Console.WriteLine("1. Listar Usuarios");
-                Console.WriteLine("2. Alta de Usuario");
-                Console.WriteLine("3. Modificar Usuario");
-                Console.WriteLine("4. Eliminar Usuario");
-                Console.WriteLine("5. Volver");
-                Console.WriteLine();
+        //    ControladorPermiso Permiso = new ControladorPermiso();
 
-                //int opcionUsuario = Convert.ToInt32(Console.ReadLine());
+        //    while (!volver)
+        //    {
+        //        Console.Clear();
+        //        Console.WriteLine("=== Menú Permiso ===");
+        //        Console.WriteLine("L. Listar Permisos");
+        //        Console.WriteLine("A. Alta de Permiso");
+        //        Console.WriteLine("M. Modificar Permiso");
+        //        Console.WriteLine("E. Eliminar Permiso");
+        //        Console.WriteLine("V. Volver");
+        //        Console.WriteLine();
 
-                ConsoleKeyInfo tecla = Console.ReadKey();
+        //        msj.Info("Seleccione una opción del menú: ");
 
-                //switch (opcionUsuario)
-                //switch (tecla.KeyChar)
-                //{
-                //    case 1:
-                //        ListarUsuarios();
-                //        break;
-                //    case 2:
-                //        AltaUsuario();
-                //        break;
-                //    case 3:
-                //        ModificarUsuario();
-                //        break;
-                //    case 4:
-                //        EliminarUsuario();
-                //        break;
-                //    case 5:
-                //        volver = true;
-                //        break;
-                //    default:
-                //        MensajeOpcionInvalida();
-                //        break;
-                //}
-            }
-        }
+        //        ConsoleKeyInfo tecla = Console.ReadKey(true);
+
+        //        switch (tecla.Key)
+        //        {
+        //            case ConsoleKey.L:
+        //                Permiso.ListarPermisos(listaPermisos, true);
+        //                break;
+        //            case ConsoleKey.A:
+        //                Permiso.AltaPermiso(listaPermisos);
+        //                break;
+        //            case ConsoleKey.M:
+        //                Permiso.ModificarPermiso(listaPermisos);
+        //                break;
+        //            case ConsoleKey.E:
+        //                Permiso.EliminarPermiso(listaPermisos, listaUsuarios, listaGrupos);
+        //                break;
+        //            case ConsoleKey.V:
+        //                volver = true;
+        //                break;
+        //            default:
+        //                ;
+        //                break;
+        //        }
+        //    }
+        //}
+
+        //static void MenuGrupo()
+        //{
+        //    bool volver = false;
+        //    ControladorGrupo grupo = new ControladorGrupo();
+        //    MensajesDeSisema mensaje = new MensajesDeSisema();
+
+        //    while (!volver)
+        //    {
+        //        Console.Clear();
+        //        Console.WriteLine("=== Menú Grupo ===");
+        //        Console.WriteLine("L. Listar Grupos");
+        //        Console.WriteLine("A. Alta de Grupo");
+        //        Console.WriteLine("M. Modificar Grupo");
+        //        Console.WriteLine("E. Eliminar Grupo");
+        //        Console.WriteLine("V. Volver");
+        //        Console.WriteLine();
+
+        //        msj.Info("Seleccione una opción del menú: ");
+
+        //        ConsoleKeyInfo tecla = Console.ReadKey(true);
+
+        //        switch (tecla.Key)
+        //        {
+        //            case ConsoleKey.L:
+        //                grupo.ListarGrupos(listaGrupos, true);
+        //                break;
+        //            case ConsoleKey.A:
+        //                grupo.AltaGrupo(listaGrupos, listaPermisos);
+        //                break;
+        //            case ConsoleKey.M:
+        //                grupo.ModificarGrupo(listaGrupos, listaPermisos);
+        //                break;
+        //            case ConsoleKey.E:
+        //                grupo.EliminarGrupo(listaGrupos, listaUsuarios);
+        //                break;
+        //            case ConsoleKey.V:
+        //                volver = true;
+        //                break;
+        //            default:
+        //                mensaje.Error("Opción inválida. Por favor, seleccione una opción válida.");
+        //                break;
+        //        }
+        //    }
+        //}
+
+        //static void MenuUsuario()
+        //{
+        //    bool volver = false;
+        //    ControladorUsuario usuario = new ControladorUsuario();
+        //    MensajesDeSisema mensaje = new MensajesDeSisema();
+
+        //    while (!volver)
+        //    {
+        //        Console.Clear();
+        //        Console.WriteLine("=== Menú Usuario ===");
+        //        Console.WriteLine("L. Listar Usuarios");
+        //        Console.WriteLine("A. Alta de Usuario");
+        //        Console.WriteLine("M. Modificar Usuario");
+        //        Console.WriteLine("E. Eliminar Usuario");
+        //        Console.WriteLine("V. Volver");
+        //        Console.WriteLine();
+
+        //        msj.Info("Seleccione una opción del menú: ");
+
+        //        ConsoleKeyInfo tecla = Console.ReadKey(true);
+
+        //        switch (tecla.Key)
+        //        {
+        //            case ConsoleKey.L:
+        //                usuario.ListarUsuarios(listaUsuarios, true);
+        //                break;
+        //            case ConsoleKey.A:
+        //                usuario.AltaUsuario(listaGrupos, listaPermisos, listaUsuarios);
+        //                break;
+        //            case ConsoleKey.M:
+        //                usuario.ModificarUsuario(listaGrupos, listaPermisos, listaUsuarios);
+        //                break;
+        //            case ConsoleKey.E:
+        //                usuario.EliminarUsuario(listaUsuarios);
+        //                break;
+        //            case ConsoleKey.V:
+        //                volver = true;
+        //                break;
+        //            default:
+        //                mensaje.Error("Opción inválida. Por favor, seleccione una opción válida.");
+        //                break;
+        //        }
+        //    }
+        //}
 
 
     }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TP_Contursi_Garau_Vegetti_Mangoldt_Maidana
+namespace TP_PNET
 {
     internal class ModeloPermiso
     {
@@ -21,7 +21,7 @@ namespace TP_Contursi_Garau_Vegetti_Mangoldt_Maidana
 
         public override string ToString()
         {
-            return $"Código: {Codigo}, Nombre: {Nombre}, Descripción: {Descripcion}";
+            return $"----Permiso Código: {Codigo}, Nombre: {Nombre}, Descripción: {Descripcion}\n";
         }
     }
 }

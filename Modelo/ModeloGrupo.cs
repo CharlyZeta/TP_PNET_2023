@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TP_Contursi_Garau_Vegetti_Mangoldt_Maidana
+namespace TP_PNET
 {
     internal class ModeloGrupo
     {
@@ -23,7 +23,7 @@ namespace TP_Contursi_Garau_Vegetti_Mangoldt_Maidana
         // Sobrescribir el método ToString
         public override string ToString()
         {
-            return $"Código: {Codigo}, Nombre: {Nombre}, Permisos: {string.Join(", ", ListaPermisos)}";
+            return $" Grupo Código: {Codigo}, Nombre: {Nombre} \n {string.Join(" ", ListaPermisos)}\n";
         }
     }
 }

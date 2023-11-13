@@ -3,61 +3,82 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TP_Contursi_Garau_Vegetti_Mangoldt_Maidana.Vista;
-using TP_Contursi_Garau_Vegetti_Mangoldt_Maidana.Controlador;
-using TP_Contursi_Garau_Vegetti_Mangoldt_Maidana;
-using System.Diagnostics.Eventing.Reader;
+using TP_PNET.Vista;
+using TP_PNET.Controlador;
+using TP_PNET;
+
 
 namespace TP_PNET.Controlador
 {
     class ControladorGrupo
     {
-        public bool ListarGrupos(List<ModeloGrupo> listaGrupos)
+        static MensajesDeSisema msj = new MensajesDeSisema();
+
+        /// <summary>
+        /// Lista de grupos del sistema informando Código, Nombre y la lista de permisos.
+        /// Utiliza un valor booleano que pide o no que se pulse una tecla para continuar
+        /// </summary>
+        /// <param name="listaGrupos">Lista de grupos</param>
+        /// <param name="pideKey">si es TRUE pide confirmación al terminar de mostrar la lista en pantalla</param>
+        /// <returns></returns>
+        public bool ListarGrupos(List<ModeloGrupo> listaGrupos, bool pideKey)
         {
+            Console.WriteLine("\n");
+
             Console.WriteLine("=== Lista de Grupos ===");
+
+            Console.WriteLine();
 
             foreach (ModeloGrupo grupo in listaGrupos)
             {
                 Console.WriteLine(grupo.ToString());
             }
-            Console.ReadKey();
+            if (pideKey)
+            {
+                msj.Info("Presione una tecla para continuar...");
+                Console.ReadKey();
+            }
             return true;
         }
 
-        public bool AltaGrupo(List<ModeloGrupo> listaGrupos, List<ModeloPermiso> listaPermisos)
+        /// <summary>
+        /// Alta de grupos del sistema. Genera ID automáticamente
+        /// </summary>
+        /// <param name="listaGrupos">Lista de grupos</param>
+        /// <param name="listaPermisos">Lista de Permisos</param>
+        /// <returns>TRUE</returns>
+        public List<ModeloGrupo> AltaGrupo(List<ModeloGrupo> listaGrupos, List<ModeloPermiso> listaPermisos)
         {
             int codigo = 0;
+            string error, nombre;
+            Console.WriteLine("\n");
+
             Console.WriteLine("=== Alta de Grupo ===");
 
-            //Console.Write("Ingrese el código del grupo: ");            
-            //int codigo = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine();
 
             try
             {
                 // si la lista está vacía le asigna al primer código el 1, si ya tiene valores incrementa el valor máximo.
                 _ = listaGrupos.Any() ? codigo = listaGrupos.Max(p => p.Codigo) + 1 : codigo = 1;
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Código {0} agregado exitosamente.", codigo);
-                Console.ResetColor();
-                Console.WriteLine();
-                Console.ReadKey();
+                msj.Exito("Código agregado exitosamente.");
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Ocurrió un error al agregar el código del grupo: " + ex.Message);
-                Console.ResetColor();
-                Console.WriteLine();
-                Console.ReadKey();
+                msj.Error("Ocurrió un error al agregar el código del grupo: ");
+                error = ex.ToString();
+                msj.Error(error);
             }
 
-
-            Console.Write("Ingrese el nombre del grupo: ");
-            string nombre = Console.ReadLine();
+            do
+            {
+                Console.Write("Ingrese el nombre del grupo: ");
+                nombre = Console.ReadLine();
+            } while (string.IsNullOrEmpty(nombre));
 
             // Obtener la lista de permisos para el grupo
-            List<ModeloPermiso> listaPermisosGrupo = new List<ModeloPermiso>();
+            List < ModeloPermiso > listaPermisosGrupo = new List<ModeloPermiso>();
 
             bool agregarMasPermisos = true, ok;
             int codigoPermiso = 0;
@@ -86,44 +107,62 @@ namespace TP_PNET.Controlador
                     }
                     else
                     {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("No se encontró un permiso con el código ingresado.");
-                        Console.ResetColor();
-                        Console.WriteLine();
-                        Console.ReadKey();
+                        msj.Error("No se encontró un permiso con el código ingresado.");
                     }
                 }
             }
 
             ModeloGrupo grupo = new ModeloGrupo(codigo, nombre, listaPermisosGrupo);
-            listaGrupos.Add(grupo);
-            
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Grupo agregado exitosamente.");
-            Console.ResetColor();
-            Console.WriteLine();
-            Console.ReadKey();
 
-            return true;
+            try
+            {
+                listaGrupos.Add(grupo);
+            
+            msj.Exito("Grupo agregado exitosamente.");
+            }
+            catch (Exception ex)
+            {
+                msj.Error("Ocurrió un error al agregar el grupo: ");
+                error = ex.Message;
+                msj.Error(error + "Presione una tecla para continuar.");
+            }
+            return listaGrupos;
         }
 
+
+        /// <summary>
+        /// Modifica los datos del grupo del sistema. Permite cambiar todos los datos menos el ID. Es obligatorio cargarle al menos un permiso y un grupo al usuario.
+        /// </summary>
+        /// <param name="listaGrupos">Lista de grupos</param>
+        /// <param name="listaPermisos">Lista de Permisos</param>
         public bool ModificarGrupo(List<ModeloGrupo> listaGrupos, List<ModeloPermiso> listaPermisos)
         {
             bool ok;
-            int codigoPermisoModificado;
+            int codigoPermisoModificado, codigoModificar;
+            string nuevoNombre;
+
+            Console.WriteLine("\n");
 
             Console.WriteLine("=== Modificar Grupo ===");
 
-            Console.Write("Ingrese el código del grupo a modificar: ");
-            int codigoModificar = Convert.ToInt32(Console.ReadLine());
+            ListarGrupos(listaGrupos, false);
+            do
+            {
+                Console.Write("Ingrese el código del grupo a modificar: ");
+                ok = int.TryParse(Console.ReadLine(), out codigoModificar);
+            }while (!ok);
 
+            // busca el código dentro de la lista de grupos
             ModeloGrupo grupoModificar = listaGrupos.Find(g => g.Codigo == codigoModificar);
 
             if (grupoModificar != null)
             {
-                Console.Write("Ingrese el nuevo nombre del grupo: ");
-                string nuevoNombre = Console.ReadLine();
-
+                do
+                {
+                    Console.Write("Ingrese el nuevo nombre del grupo: ");
+                    nuevoNombre = Console.ReadLine();
+                }while (string.IsNullOrEmpty(nuevoNombre)) ;
+                
                 grupoModificar.Nombre = nuevoNombre;
 
                 // Obtener la lista de permisos actualizada para el grupo
@@ -154,40 +193,40 @@ namespace TP_PNET.Controlador
                         }
                         else
                         {
-                            Console.ForegroundColor= ConsoleColor.Red;
-                            Console.WriteLine("No se encontró un permiso con el código ingresado.");
-                            Console.ResetColor();
+                            msj.Error("No se encontró un permiso con el código ingresado.");
                         }
                     }
                 }
 
                 grupoModificar.ListaPermisos = listaPermisosGrupoModificado;
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Grupo modificado exitosamente.");
-                Console.ResetColor();
-                Console.ReadKey();
+
+                msj.Exito("Grupo modificado exitosamente.");
             }
             else
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("No se encontró un grupo con el código ingresado.");
-                Console.ResetColor();
-                Console.ReadKey();
+                msj.Error("No se encontró un grupo con el código ingresado.");
             }
 
             return true;
         }
 
+
+        /// <summary>
+        /// Elimina el usuario del sistema
+        /// </summary>
+        /// <!----> 
+        /// <param name="listaGrupos">Lista de Grupos</param>
+        /// <param name="listaUsuarios">Lista de Usuarios</param>
+        /// <returns>True</returns>
         public bool EliminarGrupo(List<ModeloGrupo> listaGrupos, List<ModeloUsuario> listaUsuarios)
         {
-            Console.WriteLine("=== Eliminar Grupo ===");
-
-            ListarGrupos(listaGrupos);
-
-            Console.Write("Ingrese el código del grupo a eliminar: ");
-            
             int codigoEliminar;
             bool ok;
+            Console.WriteLine("\n");
+
+            Console.WriteLine("=== Eliminar Grupo ===");
+
+            ListarGrupos(listaGrupos, false );
 
             do
             {
@@ -200,41 +239,27 @@ namespace TP_PNET.Controlador
 
             if (grupoEliminar != null)
             {
-                // Verificar si el grupo está siendo utilizado por algún usuario
+                // Verifica si el grupo está siendo utilizado por algún usuario
                 bool grupoEnUso = false;
 
                 grupoEnUso = listaUsuarios.Any(u => u.Grupo == grupoEliminar);
 
-                //foreach (ModeloUsuario usuario in listaUsuarios)
-                //{
-                //    if (usuario.Grupo == grupoEliminar)
-                //    {
-                //        grupoEnUso = true;
-                //        break;
-                //    }
-                //}
-
                 if (!grupoEnUso)
                 {
                     listaGrupos.Remove(grupoEliminar);
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("Grupo eliminado exitosamente.");
-                    Console.ResetColor();
+
+                    msj.Exito("Grupo eliminado exitosamente.");
                 }
                 else
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("No se puede eliminar el grupo porque está siendo utilizado por un usuario.");
-                    Console.ResetColor();
+                    msj.Error("No se puede eliminar el grupo porque está siendo utilizado por un usuario.");
                 }
             }
             else
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("No se encontró un grupo con el código ingresado.");
-                Console.ResetColor();
+                msj.Error("No se encontró un grupo con el código ingresado.");
             }
-
+            Console.ReadKey();
             return true;
         }
     }

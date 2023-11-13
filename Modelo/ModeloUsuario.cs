@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TP_Contursi_Garau_Vegetti_Mangoldt_Maidana
+namespace TP_PNET
 {
     internal class ModeloUsuario
     {
@@ -27,7 +27,8 @@ namespace TP_Contursi_Garau_Vegetti_Mangoldt_Maidana
 
          public override string ToString()
         {
-            return $"Código: {Codigo}, Nombre: {Nombre}, Password: {Password}, Email: {Email}, Grupo: {Grupo}, Permisos: {string.Join(", ", ListaPermisos)}";
+            return $"Usuario {Codigo}, Nombre: {Nombre}, Password: {Password}, Email: {Email}\n-- Grupo:\n {Grupo}\n-- Permisos:\n {string.Join(" ", ListaPermisos)}\n" +
+                $"------------------------------------------------";
         }
     }
 }

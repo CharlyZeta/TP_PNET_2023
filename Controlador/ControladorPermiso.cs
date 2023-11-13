@@ -4,89 +4,119 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using TP_Contursi_Garau_Vegetti_Mangoldt_Maidana;
-using TP_Contursi_Garau_Vegetti_Mangoldt_Maidana.Vista;
+using TP_PNET;
+using TP_PNET.Vista;
 using TP_PNET.Controlador;
 
 namespace TP_PNET.Controlador
 {
     class ControladorPermiso
     {
-        public bool ListarPermisos(List<ModeloPermiso>listaPermisos)
+        static MensajesDeSisema msj = new MensajesDeSisema();
+
+        /// <summary>
+        /// Lista de permisos del sistema informando Código, Nombre y descripción del permisos.
+        /// Utiliza un valor booleano que pide o no que se pulse una tecla para continuar
+        /// </summary>
+        /// <param name="listaPermisos">Lista de grupos</param>
+        /// <param name="pideKey">si es TRUE pide confirmación al terminar de mostrar la lista en pantalla</param>
+        /// <returns></returns>
+        public bool ListarPermisos(List<ModeloPermiso>listaPermisos, bool pideKey)
         {
-            Console.WriteLine("=== Lista de Permisos ===");
+            Console.WriteLine("\n");
+
+            msj.Menu("=== Lista de Permisos ===");
+
+            Console.WriteLine();
 
             foreach (ModeloPermiso permiso in listaPermisos)
             {
                 Console.WriteLine(permiso.ToString());
             }
-            Console.ReadKey();
+            if (pideKey)
+            {
+                msj.Info("Presione una tecla para continuar...");
+                Console.ReadKey();
+            }
             return true;
 
         }
-        public List<ModeloPermiso> AltaPermiso(List<ModeloPermiso> listaPermisos)
+
+        /// <summary>
+        /// Alta de permisos del sistema. Genera ID automáticamente
+        /// </summary>
+        /// <param name="listaPermisos">Lista de Permisos</param>
+        /// <returns>TRUE</returns>
+        public bool AltaPermiso(List<ModeloPermiso> listaPermisos)
         {
-            Console.WriteLine("=== Alta de Permiso ===");
-
+            string nombre,descripcion,error;
             int codigo=0;
+            Console.WriteLine("\n");
 
-            //Console.Write("Ingrese el código del permiso: ");
-            //int codigo = Convert.ToInt32(Console.ReadLine());
+            msj.Menu("=== Alta de Permiso ===");
+
+            Console.WriteLine();
+
             try
             {
-                // si la lista está vací le asigna al primer código el 1, si ya tiene valores incrementa el valor máximo.
+                // si la lista está vacía le asigna al primer código el 1, si ya tiene valores incrementa el valor máximo.
                 _ = listaPermisos.Any() ? codigo = listaPermisos.Max(p => p.Codigo) + 1 : codigo = 1;
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Código {0} agregado exitosamente.", codigo);
-                Console.ResetColor();
-                Console.WriteLine();
+                msj.Exito("Código agregado exitosamente.");
+
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Ocurrió un error al agregar el código del permiso: " + ex.Message);
-                Console.ResetColor();
+                msj.Error("Ocurrió un error al agregar el código del permiso: ");
+                error = ex.ToString();
+                msj.Error(error);
             }
 
-            Console.Write("Ingrese el nombre del permiso: ");
-            string nombre = Console.ReadLine();
-
-            Console.Write("Ingrese la descripción del permiso: ");
-            string descripcion = Console.ReadLine();
-
+            do
+            {
+                Console.Write("Ingrese el nombre del permiso: ");
+                nombre = Console.ReadLine();
+            } while (string.IsNullOrEmpty(nombre));
             
+            ;
+            do
+            {
+                Console.Write("Ingrese la descripción del permiso: ");
+                descripcion = Console.ReadLine();
+            } while (string.IsNullOrEmpty(descripcion));
+
+
             ModeloPermiso permiso = new ModeloPermiso(codigo, nombre, descripcion);
+
             try
             {
                 listaPermisos.Add(permiso);
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Permiso agregado exitosamente! Presione una tecla para continuar.");
-                Console.ResetColor();
-                Console.ReadKey();
+                msj.Exito("Permiso agregado exitosamente! Presione una tecla para continuar.");
             }
             catch (Exception ex)
-            {   
-                Console.ForegroundColor= ConsoleColor.Red;
-                Console.WriteLine("Ocurrió un error al agregar el permiso: " + ex.Message);
-                Console.WriteLine("Presione una tecla para continuar.");
-                Console.ResetColor();
-                Console.ReadKey();
+            {
+                msj.Error("Ocurrió un error al agregar el permiso: ");
+                error = ex.Message;
+                msj.Error(error + "Presione una tecla para continuar.");
             }
-
-            return listaPermisos;
+            return true;
         }
 
+        /// <summary>
+        /// Modifica los datos del permiso del sistema. Permite cambiar todos los datos menos el ID. 
+        /// </summary>
+        /// <param name="listaPermisos">Lista de Permisos</param>
+        /// <returns>Lista de permisos</returns>
         public List<ModeloPermiso> ModificarPermiso(List<ModeloPermiso> listaPermisos)
         {
             bool ok;
             int codigoModificar;
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("=== Modificar Permiso ===");
-            Console.ResetColor();
 
-            ListarPermisos(listaPermisos);
+            Console.WriteLine("\n");
+
+            msj.Menu("=== Modificar Permiso ===");
             
+            ListarPermisos(listaPermisos, false);
 
             do
             {
@@ -95,8 +125,6 @@ namespace TP_PNET.Controlador
 
             } while (!ok);
             
-
-
             // busca el código dentro de la lista
             ModeloPermiso permisoModificar = listaPermisos.Find(p => p.Codigo == codigoModificar);
             
@@ -106,36 +134,47 @@ namespace TP_PNET.Controlador
                 Console.Write("Ingrese el nuevo nombre del permiso: ");
                 string nuevoNombre = Console.ReadLine();
 
-                if (nuevoNombre!="") permisoModificar.Nombre = nuevoNombre;
-                else Console.WriteLine("No se han modificado nombre del permiso!");
+                if (nuevoNombre != "") permisoModificar.Nombre = nuevoNombre;
+                else msj.Error("No se han modificado nombre del permiso!");
 
                 Console.Write("Ingrese la nueva descripción del permiso: ");
                 string nuevaDescripcion = Console.ReadLine();
 
-                if(nuevaDescripcion!="") permisoModificar.Descripcion = nuevaDescripcion;
-                else Console.WriteLine("No se han modificado descripción del permiso!");
+                if (nuevaDescripcion != "") permisoModificar.Descripcion = nuevaDescripcion;
+                else msj.Error("No se han modificado descripción del permiso!");
 
                 Console.WriteLine();
-                if (nuevoNombre == "" && nuevaDescripcion == "") Console.WriteLine("No se han modificado los datos del permiso!");
-                else Console.WriteLine("Permiso modificado exitosamente.");
+
+                if (nuevoNombre == "" && nuevaDescripcion == "") msj.Error("No se han modificado los datos del permiso!");
+                else msj.Exito("Permiso modificado exitosamente.");
+
+                Console.WriteLine();
             }
             else
             {
-                Console.ForegroundColor = ConsoleColor.Red; 
-                Console.WriteLine("No se encontró un permiso con el código ingresado.");
-                Console.ResetColor();
+                msj.Error("No se encontró un permiso con el código ingresado.");
             }
-            Console.ReadKey();
+
             return listaPermisos;
         }
+
+        /// <summary>
+        /// Elimina el usuario del sistema
+        /// </summary>
+        /// <param name="listaPermisos">Lista de Grupos</param>
+        /// <param name="listaUsuarios">Lista de Usuarios</param>
+        /// <param name="listaGrupos">Lista de Usuarios</param>
+        /// <returns>True</returns>
         public List<ModeloPermiso> EliminarPermiso(List<ModeloPermiso> listaPermisos, List<ModeloUsuario> listaUsuarios, List<ModeloGrupo> listaGrupos)
         {
-            Console.WriteLine("=== Eliminar Permiso ===");
-
-            ListarPermisos(listaPermisos);
-            
             int codigoEliminar;
-            bool ok=false;
+            bool ok = false;
+            Console.WriteLine("\n");
+
+            msj.Menu("=== Eliminar Permiso ===");
+
+            ListarPermisos(listaPermisos, false);
+            
             do
             {
                 Console.WriteLine();
@@ -143,8 +182,6 @@ namespace TP_PNET.Controlador
                 ok = int.TryParse(Console.ReadLine(), out codigoEliminar);
             } while (!ok);
             
-            //int codigoEliminar = Convert.ToInt32(Console.ReadLine());       // VALIDAR Y CORREGIR
-
             ModeloPermiso permisoEliminar = listaPermisos.Find(p => p.Codigo == codigoEliminar);
 
             if (permisoEliminar != null)
@@ -154,45 +191,22 @@ namespace TP_PNET.Controlador
 
                 permisoEnUso = listaUsuarios.Any(usuario => usuario.ListaPermisos.Contains(permisoEliminar));
 
-                //foreach (ModeloUsuario usuario in listaUsuarios)
-                //{
-                //    if (usuario.ListaPermisos.Contains(permisoEliminar))
-                //    {
-                //        permisoEnUso = true;
-                //        break;
-                //    }
-                //}
-
                 permisoEnUso = listaGrupos.Any(grupo => grupo.ListaPermisos.Contains(permisoEliminar));
-
-                //foreach (ModeloGrupo grupo in listaGrupos)
-                //{
-                //    if (grupo.ListaPermisos.Contains(permisoEliminar))
-                //    {
-                //        permisoEnUso = true;
-                //        break;
-                //    }
-                //}
 
                 if (!permisoEnUso)
                 {
                     listaPermisos.Remove(permisoEliminar);
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("Permiso eliminado exitosamente.");
-                    Console.ResetColor();
+                    
+                    msj.Exito("Permiso eliminado exitosamente.");
                 }
                 else
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("No se puede eliminar el permiso porque está siendo utilizado por un usuario o grupo.");
-                    Console.ResetColor();
+                    msj.Error("No se puede eliminar el permiso porque está siendo utilizado por un usuario o grupo.");
                 }
             }
             else
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("No se encontró un permiso con el código ingresado.");
-                Console.ResetColor();
+                msj.Error("No se encontró un permiso con el código ingresado.");
             }
             Console.ReadKey();
             return listaPermisos;

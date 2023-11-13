@@ -21,7 +21,7 @@ namespace TP_PNET
         {
             DataInitializer data = new DataInitializer();
 
-            data.DataInit(listaPermisos,listaGrupos,listaUsuarios);
+            data.DataInit(listaPermisos,listaGrupos,listaUsuarios); // se cargan datos de prueba.
 
             bool salir = false;
 
@@ -29,7 +29,7 @@ namespace TP_PNET
             {
                 VistaPrincipal principal = new VistaPrincipal();
 
-                salir = principal.menuPrincipal(listaPermisos,listaGrupos,listaUsuarios, salir);
+                salir = principal.menuPrincipal(listaPermisos,listaGrupos,listaUsuarios, salir); // se accede al menu principal
             }
         }
     }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TP_PNET
 {
-    internal class ModeloPermiso
+    class ModeloPermiso
     {
         public int Codigo { get; set; }
         public string Nombre { get; set; }

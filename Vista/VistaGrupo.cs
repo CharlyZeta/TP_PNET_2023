@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TP_PNET.Controlador;
+using TP_PNET.Vista;
+using TP_PNET;
 
-namespace TP_PNET.Vista
+namespace TP_PNET
 {
     class VistaGrupo
     {

@@ -46,6 +46,7 @@
     <Compile Include="Controlador\ControladorGrupo.cs" />
     <Compile Include="Controlador\ControladorPermiso.cs" />
     <Compile Include="Controlador\ControladorUsuario.cs" />
+    <Compile Include="Data\DataInitializer.cs" />
     <Compile Include="Modelo\ModeloGrupo.cs" />
     <Compile Include="Modelo\ModeloPermiso.cs" />
     <Compile Include="Program.cs" />

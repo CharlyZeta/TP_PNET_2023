@@ -5,8 +5,9 @@ using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 using TP_PNET;
+using TP_PNET.Vista;
 
-namespace TP_PNET.Vista
+namespace TP_PNET
 {
     class VistaPrincipal
     {

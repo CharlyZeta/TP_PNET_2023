@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TP_PNET.Vista;
-using TP_PNET.Controlador;
 using TP_PNET;
 
 
-namespace TP_PNET.Controlador
+namespace TP_PNET
 {
     class ControladorGrupo
     {

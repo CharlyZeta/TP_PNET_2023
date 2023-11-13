@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TP_PNET.Vista
 {
-    class MensajesDeSisema
+    public class MensajesDeSisema
     {
 
         /// <summary>

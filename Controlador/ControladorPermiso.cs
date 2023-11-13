@@ -6,9 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using TP_PNET;
 using TP_PNET.Vista;
-using TP_PNET.Controlador;
 
-namespace TP_PNET.Controlador
+namespace TP_PNET
 {
     class ControladorPermiso
     {
